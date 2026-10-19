@@ -1,0 +1,21 @@
+# Node.js dependencies (installed inside container via npm install)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build and cache
+.npm/
+dist/
+coverage/
+
+# Git and OS metadata
+.git/
+.gitignore
+.DS_Store
+Thumbs.db
+
+# Environment and logs
+.env
+.env.*
+*.log

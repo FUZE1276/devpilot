@@ -1,0 +1,129 @@
+name: DevPilot CI - Build Stage & Quality Gate
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+  workflow_dispatch:
+
+jobs:
+  # =============================================================
+  # FASE 1: Análisis Estático, Linting y Verificación de Sintaxis
+  # =============================================================
+  lint-and-syntax:
+    name: 1. Linting & Static Code Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Código Fuente
+        uses: actions/checkout@v4
+
+      - name: Configurar Entorno Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Configurar Entorno Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Compilación Sintáctica de Python (AST Verification)
+        run: |
+          python -m py_compile devpilot_core/main.py
+          python -m py_compile devpilot_core/database.py
+          python -m py_compile devpilot_core/auth.py
+          python -m py_compile devpilot_core/monitor.py
+          python -m py_compile devpilot_core/docker_manager.py
+          python -m py_compile devpilot_core/ai_agent.py
+          python -m py_compile microservices/products/main.py
+          python -m py_compile microservices/orders/main.py
+          python -m py_compile microservices/payments/main.py
+          echo "✓ Todos los archivos Python compilaron sin errores de sintaxis."
+
+      - name: Verificación Sintáctica de Node.js (Microservicio Users)
+        run: |
+          node --check microservices/users/server.js
+          echo "✓ Servidor Node.js Express validado sintácticamente."
+
+      - name: Verificación Sintáctica del Frontend SPA (Arquitectura MVVM)
+        run: |
+          node --check devpilot_core/static/models/apiClient.js
+          node --check devpilot_core/static/models/authModel.js
+          node --check devpilot_core/static/models/telemetryModel.js
+          node --check devpilot_core/static/models/chaosModel.js
+          node --check devpilot_core/static/models/remediationModel.js
+          node --check devpilot_core/static/models/servicesModel.js
+          node --check devpilot_core/static/models/logsModel.js
+          node --check devpilot_core/static/models/chatModel.js
+          node --check devpilot_core/static/models/model.js
+          node --check devpilot_core/static/controllers/appController.js
+          node --check devpilot_core/static/controllers/controller.js
+          node --check devpilot_core/static/views/view.js
+          node --check devpilot_core/static/js/eventBridges.js
+          node --check devpilot_core/static/js/app.js
+          echo "✓ Todos los módulos JavaScript del patrón MVVM validados con éxito."
+
+  # =============================================================
+  # FASE 2: Pruebas Automatizadas Unitarias y de Contrato
+  # =============================================================
+  unit-and-contract-tests:
+    name: 2. Automated Testing Suite (Pytest & Node)
+    runs-on: ubuntu-latest
+    needs: lint-and-syntax
+    steps:
+      - name: Checkout Código Fuente
+        uses: actions/checkout@v4
+
+      - name: Configurar Entorno Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Instalar Dependencias de Python
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r devpilot_core/requirements.txt
+          pip install -r microservices/products/requirements.txt
+          pip install -r microservices/orders/requirements.txt
+          pip install -r microservices/payments/requirements.txt
+          pip install pytest
+
+      - name: Ejecutar Pruebas Unitarias de Python (devpilot_core & microservicios)
+        run: |
+          pytest tests/ -v
+
+      - name: Configurar Entorno Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Instalar Dependencias y Ejecutar Pruebas de Users Service
+        run: |
+          cd microservices/users
+          npm ci || npm install
+          npm test
+
+  # =============================================================
+  # FASE 3: Validación de Infraestructura y Construcción Docker
+  # =============================================================
+  docker-build:
+    name: 3. Container Images Build & Compose Validation
+    runs-on: ubuntu-latest
+    needs: unit-and-contract-tests
+    steps:
+      - name: Checkout Código Fuente
+        uses: actions/checkout@v4
+
+      - name: Validar Sintaxis de docker-compose.yml
+        run: |
+          docker compose config
+
+      - name: Configurar Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Construir Imágenes de Contenedor (Build Stage Verification)
+        run: |
+          docker compose build --no-cache
+          echo "✓ Construcción de las 5 imágenes Docker (devpilot_core, users, products, orders, payments) completada exitosamente."

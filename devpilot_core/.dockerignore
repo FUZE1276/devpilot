@@ -1,0 +1,31 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Local databases and runtime state
+*.db
+*.sqlite3
+data/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Git and OS metadata
+.git/
+.gitignore
+.DS_Store
+Thumbs.db
+*.log

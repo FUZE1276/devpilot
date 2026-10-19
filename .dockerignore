@@ -1,0 +1,25 @@
+# Global Docker build ignore
+.git/
+.gitignore
+.github/
+.vscode/
+.idea/
+docs/
+*.md
+!README.md
+*.log
+.env
+.env.*
+!.env.example
+__pycache__/
+*.py[cod]
+node_modules/
+.pytest_cache/
+.coverage
+htmlcov/
+devpilot_data/
+*.db
+venv/
+.venv/
+env/
+ENV/
