@@ -205,6 +205,22 @@ cd "c:\Users\fuze1\OneDrive\Documents\devpilot"
 
 ---
 
+# 🎯 ALINEACIÓN TOTAL CON LAS DIAPOSITIVAS DEL ING. CARLOS PINEDA
+
+El docente presentó las diapositivas oficiales: **"Aplicación del Ciclo de Vida del Software - Proyecto Empresarial Web con Herramientas Open Source"**.  
+Para garantizar un 5.0 (100%) tanto en la exposición del 30% como en el parcial, **DevPilot tiene implementada y probada al menos una herramienta real de sus diapositivas para CADA ETAPA**:
+
+| Diapositiva del Docente | Etapa DevOps | Herramienta Oficial Implementada | Archivo de Configuración | Comando de Prueba en Terminal | Estado y Resultado Verificado |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Slide 6 & 7** | **Etapa 3: Construir (BUILD)** | **Gradle** & **Apache Maven** | [`build.gradle`](file:///build.gradle) <br> [`pom.xml`](file:///pom.xml) | `gradle build` <br> o `mvn compile` | `BUILD SUCCESSFUL` (Compila AST Python, parser V8 Node y 37 checks). |
+| **Slide 8** | **Etapa 4: Ensayo (TEST)** | **JUnit 5 (Jupiter)** | [`src/test/java/.../DevPilotBuildVerificationTest.java`](file:///src/test/java/io/devpilot/sre/DevPilotBuildVerificationTest.java) | `mvn test` | `Tests run: 4, Failures: 0, Errors: 0` (Pruebas unitarias formales en Java). |
+| **Slide 10 & 11** | **Etapa 5: Lanzamiento (RELEASE)** | **Jenkins** & **GitLab CI/CD** | [`Jenkinsfile`](file:///Jenkinsfile) <br> [`.gitlab-ci.yml`](file:///.gitlab-ci.yml) | Mostrar archivo y correr `docker compose build` | Pipeline declarativo con 5 fases automáticas y empaquetado inmutable. |
+| **Slide 12** | **Etapa 6: Desplegar (DEPLOY)** | **Docker & Compose** | [`docker-compose.yml`](file:///docker-compose.yml) | `docker compose up -d` <br> `docker compose ps` | 5 microservicios levantados, red bridge `devpilot_net` y `healthy`. |
+| **Slide 14** | **Etapa 7: Operar (OPERATE)** | **Nginx** | [`nginx/nginx.conf`](file:///nginx/nginx.conf) | `docker compose up -d nginx_proxy` | Nginx actúa como Reverse Proxy y API Gateway ruteando tráfico a los microservicios. |
+| **Slide 17** | **Etapa 8: Monitor (MONITOR)** | **Prometheus** | [`prometheus/prometheus.yml`](file:///prometheus/prometheus.yml) | `docker compose up -d prometheus` o ver `/metrics` | Motor de observabilidad que scrapea telemetría y métricas cada 5 segundos. |
+
+---
+
 # 3. PARTE 2: Examen Parcial en Mesa - Las 5 Etapas del Ciclo DevOps
 
 El docente evalúa el ciclo DevOps seleccionando **cualquiera de las etapas restantes**:

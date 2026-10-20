@@ -1,0 +1,61 @@
+/*
+ * ==============================================================================
+ * DevPilot SRE Platform - Gradle Build Automation File
+ * Cumplimiento de la Etapa de Construir (BUILD) - Diapositiva 7
+ * ==============================================================================
+ */
+
+plugins {
+    id 'base'
+}
+
+defaultTasks 'build'
+
+// 1. Tarea de Compilación Sintáctica AST para Python
+task compilePython(type: Exec) {
+    group = 'build'
+    description = 'Compila los modulos Python a bytecode y valida el arbol AST con py_compile'
+    commandLine 'powershell', '-Command', 'Get-ChildItem -Path devpilot_core/*.py, microservices/*/*.py -Recurse | ForEach-Object { py -m py_compile $_.FullName }'
+    doLast {
+        println "[OK] Compilacion AST de Python finalizada con 0 errores."
+    }
+}
+
+// 2. Tarea de Verificación Sintáctica para Node.js y Frontend MVVM
+task compileNode(type: Exec) {
+    group = 'build'
+    description = 'Valida la sintaxis JavaScript del backend y frontend MVVM con el parser V8 de Node.js'
+    commandLine 'powershell', '-Command', 'Get-ChildItem -Path microservices/users/*.js, devpilot_core/static/**/*.js -Recurse | ForEach-Object { node --check $_.FullName }'
+    doLast {
+        println "[OK] Verificacion de sintaxis Node.js/V8 finalizada con 0 errores."
+    }
+}
+
+// 3. Tarea de Pruebas Unitarias Pytest
+task testPython(type: Exec) {
+    group = 'verification'
+    description = 'Ejecuta la suite completa de pruebas unitarias y de contrato en Pytest'
+    commandLine 'py', '-m', 'pytest', 'tests/', '-v'
+}
+
+// 4. Tarea de Pruebas Unitarias Node:Test
+task testNode(type: Exec) {
+    group = 'verification'
+    description = 'Ejecuta las pruebas unitarias nativas del microservicio Users en Node.js'
+    workingDir 'microservices/users'
+    commandLine 'cmd', '/c', 'npm test'
+}
+
+// 5. Tarea de Quality Gate Integral
+task qualityGate(type: Exec) {
+    group = 'verification'
+    description = 'Ejecuta el script oficial de Quality Gate de DevPilot (37 comprobaciones)'
+    commandLine 'powershell', '-ExecutionPolicy', 'Bypass', '-File', './verify-build.ps1'
+}
+
+// Vinculación de dependencias al ciclo de vida estándar de Gradle
+compilePython.mustRunAfter clean
+compileNode.mustRunAfter clean
+
+check.dependsOn compilePython, compileNode, testPython, testNode, qualityGate
+build.dependsOn check

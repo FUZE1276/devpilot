@@ -134,6 +134,34 @@ services:
       retries: 3
       start_period: 8s
 
+  # Etapa 7: Operar - Nginx Reverse Proxy y Load Balancer (Diapositiva 14)
+  nginx_proxy:
+    image: nginx:alpine
+    container_name: devpilot_nginx
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - devpilot_net
+    depends_on:
+      - devpilot_core
+
+  # Etapa 8: Monitor - Prometheus Telemetría y Métricas (Diapositiva 17)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: devpilot_prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    networks:
+      - devpilot_net
+    depends_on:
+      - devpilot_core
+
 networks:
   devpilot_net:
     driver: bridge
@@ -142,3 +170,4 @@ networks:
 volumes:
   devpilot_data:
     driver: local
+

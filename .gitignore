@@ -1,0 +1,11 @@
+# Build and runtime caches
+.gradle/
+build/
+target/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+node_modules/
+.DS_Store
+Thumbs.db
