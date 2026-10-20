@@ -1,5 +1,5 @@
 # ==============================================================================
-# DevPilot SRE Platform - Script Oficial de Verificación de la Etapa de Build
+# DevPilot SRE Platform - Script Oficial de Verificacion de la Etapa de Build
 # Uso: .\verify-build.ps1
 # ==============================================================================
 
@@ -8,9 +8,9 @@ $ErrorActionPreference = "Continue"
 function Print-Header {
     param([string]$title)
     Write-Host ""
-    Write-Host ("=" * 75) -ForegroundColor Cyan
+    Write-Host "===========================================================================" -ForegroundColor Cyan
     Write-Host "  $title" -ForegroundColor Cyan
-    Write-Host ("=" * 75) -ForegroundColor Cyan
+    Write-Host "===========================================================================" -ForegroundColor Cyan
 }
 
 function Print-Step {
@@ -38,14 +38,14 @@ $TotalTests = 0
 $PassedTests = 0
 $FailedTests = 0
 
-Print-Header ">> DEVPILOT SRE ENGINE - VALIDACIÓN DE LA ETAPA DE BUILD"
-Write-Host "Iniciando análisis integral de compilación, sintaxis, pruebas unitarias y contenedores..." -ForegroundColor DarkGray
+Print-Header ">> DEVPILOT SRE ENGINE - VALIDACION DE LA ETAPA DE BUILD"
+Write-Host "Iniciando analisis integral de compilacion, sintaxis, pruebas unitarias y contenedores..." -ForegroundColor DarkGray
 Write-Host "Timestamp: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')" -ForegroundColor DarkGray
 
 # ------------------------------------------------------------------------------
-# 1. ANÁLISIS ESTÁTICO Y SINTAXIS (PYTHON, NODE.JS & FRONTEND MVVM)
+# 1. ANALISIS ESTATICO Y SINTAXIS (PYTHON, NODE.JS & FRONTEND MVVM)
 # ------------------------------------------------------------------------------
-Print-Header "1. ANÁLISIS ESTÁTICO Y COMPILACIÓN SINTÁCTICA (LINTING)"
+Print-Header "1. ANALISIS ESTATICO Y COMPILACION SINTACTICA (LINTING)"
 
 $pythonFiles = @(
     "devpilot_core\main.py",
@@ -90,10 +90,10 @@ foreach ($nf in $nodeFiles) {
         node --check $nf 2>&1 | Out-Null
         if ($LASTEXITCODE -eq 0) {
             $PassedTests++
-            Print-Step "OK" "Node.js AST" "$nf sintaxis válida (V8 Engine)"
+            Print-Step "OK" "Node.js AST" "$nf sintaxis valida (V8 Engine)"
         } else {
             $FailedTests++
-            Print-Step "FAIL" "Node.js AST" "Error sintáctico en $nf"
+            Print-Step "FAIL" "Node.js AST" "Error sintactico en $nf"
         }
     }
 }
@@ -108,14 +108,14 @@ foreach ($js in $jsModules) {
         Print-Step "OK" "MVVM Module" "$($js.Name) [Capa $(Split-Path (Split-Path $js.FullName -Parent) -Leaf)]"
     } else {
         $FailedTests++
-        Print-Step "FAIL" "MVVM Module" "Error sintáctico en $($js.FullName)"
+        Print-Step "FAIL" "MVVM Module" "Error sintactico en $($js.FullName)"
     }
 }
 
 # ------------------------------------------------------------------------------
-# 2. AUDITORÍA DE DEPENDENCIAS Y ARCHIVOS DE CONSTRUCCIÓN
+# 2. AUDITORIA DE DEPENDENCIAS Y ARCHIVOS DE CONSTRUCCION
 # ------------------------------------------------------------------------------
-Print-Header "2. AUDITORÍA DE DEPENDENCIAS Y CONTEXTO DOCKER"
+Print-Header "2. AUDITORIA DE DEPENDENCIAS Y CONTEXTO DOCKER"
 
 $dockerignoreFiles = @(
     ".dockerignore",
@@ -140,7 +140,7 @@ foreach ($di in $dockerignoreFiles) {
 # ------------------------------------------------------------------------------
 # 3. PRUEBAS AUTOMATIZADAS UNITARIAS Y DE CONTRATO
 # ------------------------------------------------------------------------------
-Print-Header "3. EJECUCIÓN DE PRUEBAS AUTOMATIZADAS (SUITE DE BUILD)"
+Print-Header "3. EJECUCION DE PRUEBAS AUTOMATIZADAS (SUITE DE BUILD)"
 
 # Python Tests
 Write-Host "Ejecutando suite Pytest para backend central y contratos..." -ForegroundColor DarkGray
@@ -148,13 +148,13 @@ $pytestOut = py -m pytest tests/ -v 2>&1
 if ($LASTEXITCODE -eq 0) {
     $TotalTests += 3
     $PassedTests += 3
-    Print-Step "OK" "Test Auth y RBAC" "Generación JWT HMAC-SHA256, TOTP RFC 6238 y roles validados"
-    Print-Step "OK" "Test SQLite ACID" "Inicialización de esquemas, CRUD y bitácora de auditoría forense"
+    Print-Step "OK" "Test Auth y RBAC" "Generacion JWT HMAC-SHA256, TOTP RFC 6238 y roles validados"
+    Print-Step "OK" "Test SQLite ACID" "Inicializacion de esquemas, CRUD y bitacora de auditoria forense"
     Print-Step "OK" "Test Contratos" "Endpoints /health, /fault/delay y negocio de microservicios"
 } else {
     $TotalTests += 3
     $FailedTests += 3
-    Print-Step "FAIL" "Pytest Suite" "Fallaron algunas pruebas unitarias en tests/:`n$pytestOut"
+    Print-Step "FAIL" "Pytest Suite" "Fallaron algunas pruebas unitarias en tests"
 }
 
 # Users Node.js Tests
@@ -169,13 +169,13 @@ if ($LASTEXITCODE -eq 0) {
 } else {
     $TotalTests++
     $FailedTests++
-    Print-Step "FAIL" "Test Users Service" "Error en pruebas de Users Service:`n$nodeTestOut"
+    Print-Step "FAIL" "Test Users Service" "Error en pruebas de Users Service"
 }
 
 # ------------------------------------------------------------------------------
-# 4. VALIDACIÓN DE INFRAESTRUCTURA COMO CÓDIGO (DOCKER COMPOSE)
+# 4. VALIDACION DE INFRAESTRUCTURA COMO CODIGO (DOCKER COMPOSE)
 # ------------------------------------------------------------------------------
-Print-Header "4. VALIDACIÓN DE INFRAESTRUCTURA COMO CÓDIGO (DOCKER COMPOSE)"
+Print-Header "4. VALIDACION DE INFRAESTRUCTURA COMO CODIGO (DOCKER COMPOSE)"
 
 $TotalTests++
 $dockerAvailable = Get-Command docker -ErrorAction SilentlyContinue
@@ -183,10 +183,10 @@ if ($dockerAvailable) {
     $composeCheck = docker compose config 2>&1
     if ($LASTEXITCODE -eq 0) {
         $PassedTests++
-        Print-Step "OK" "Docker Compose" "Topología de 5 servicios, red devpilot_net y volumen validados con 0 errores"
+        Print-Step "OK" "Docker Compose" "Topologia de 5 servicios, red devpilot_net y volumen validados con 0 errores"
     } else {
         $FailedTests++
-        Print-Step "FAIL" "Docker Compose" "Error en sintaxis de docker-compose.yml:`n$composeCheck"
+        Print-Step "FAIL" "Docker Compose" "Error en sintaxis de docker-compose.yml"
     }
 } else {
     if (Test-Path "docker-compose.yml") {
@@ -194,7 +194,7 @@ if ($dockerAvailable) {
         Print-Step "OK" "Docker Compose" "Manifiesto docker-compose.yml verificado (Modo Software Standalone)"
     } else {
         $FailedTests++
-        Print-Step "FAIL" "Docker Compose" "No se encontró el archivo docker-compose.yml"
+        Print-Step "FAIL" "Docker Compose" "No se encontro el archivo docker-compose.yml"
     }
 }
 
@@ -204,7 +204,7 @@ if ($dockerAvailable) {
 Print-Header ">> RESUMEN FINAL DE LA ETAPA DE BUILD"
 
 Write-Host "  Pruebas y Verificaciones Ejecutadas : $TotalTests" -ForegroundColor White
-Write-Host "  Aprobadas con Éxito               : $PassedTests" -ForegroundColor Green
+Write-Host "  Aprobadas con Exito               : $PassedTests" -ForegroundColor Green
 if ($FailedTests -gt 0) {
     Write-Host "  Fallos Detectados                 : $FailedTests" -ForegroundColor Red
     Write-Host ""
@@ -213,9 +213,9 @@ if ($FailedTests -gt 0) {
 } else {
     Write-Host "  Fallos Detectados                 : 0" -ForegroundColor Green
     Write-Host ""
-    Write-Host ("*" * 75) -ForegroundColor Green
+    Write-Host "***************************************************************************" -ForegroundColor Green
     Write-Host "  ESTADO: [OK] BUILD EXITOSO (El proyecto cumple con el Quality Gate)" -ForegroundColor Green
-    Write-Host "  El software está listo para empaquetado, staging y despliegue a producción." -ForegroundColor Green
-    Write-Host ("*" * 75) -ForegroundColor Green
+    Write-Host "  El software esta listo para empaquetado, staging y despliegue a produccion." -ForegroundColor Green
+    Write-Host "***************************************************************************" -ForegroundColor Green
     exit 0
 }
